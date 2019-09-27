@@ -197,6 +197,21 @@ const EVENTS = {
    *  @type {String}
    */
   STACK_SCROLL: 'cornerstonetoolsstackscroll',
+
+  /**
+   *  @type {String}
+   */
+  STACK_PREFETCH_IMAGE_LOADED: 'cornerstonetoolsstackprefetchimageloaded',
+
+  /**
+   *  @type {String}
+   */
+  STACK_PREFETCH_DONE: 'cornerstonetoolsstackprefetchdone',
+
+  /**
+   *  @type {String}
+   */
+  LABELMAP_MODIFIED: 'cornersontetoolslabelmapmodified',
 };
 
 export default EVENTS;

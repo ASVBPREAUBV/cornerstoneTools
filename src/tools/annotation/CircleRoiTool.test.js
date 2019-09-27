@@ -13,11 +13,25 @@ jest.mock('./../../stateManagement/toolState.js', () => ({
   getToolState: jest.fn(),
 }));
 
-jest.mock('./../../import.js', () => ({
+jest.mock('./../../importInternal.js', () => ({
   default: jest.fn(),
 }));
 
-jest.mock('../../externalModules.js');
+jest.mock('../../externalModules.js', () => ({
+  cornerstoneMath: {
+    point: {
+      distance: (from, to) => {
+        const distanceSquared =
+          Math.pow(from.x - to.x, 2) + Math.pow(from.y - to.y, 2);
+
+        return Math.sqrt(distanceSquared);
+      },
+    },
+  },
+  cornerstone: {
+    pixelToCanvas: jest.fn(),
+  },
+}));
 
 const badMouseEventData = 'hello world';
 const goodMouseEventData = {
@@ -34,7 +48,7 @@ const goodMouseEventData = {
 
 const image = {
   rowPixelSpacing: 0.8984375,
-  columnPixelSpacing: 0.8984375
+  columnPixelSpacing: 0.8984375,
 };
 
 describe('CircleRoiTool.js', () => {
@@ -246,21 +260,21 @@ describe('CircleRoiTool.js', () => {
       get: jest.fn(),
     };
 
-    external.cornerstone.getPixels = () => {
-      return [100, 100, 100,
-        100, 4, 5,
-        100, 3, 6,
-        100, 100, 100,
-        100, 4, 5,
-        100, 3, 6,
-        100, 100, 100,
-        100, 4, 5,
-        100, 3, 6,
-        100, 100, 100,
-        100, 4, 5,
-        100, 3, 6
-      ];
-    };
+    // prettier-ignore
+    external.cornerstone.getPixels = () => [
+      100, 100, 100,
+      100, 4, 5,
+      100, 3, 6,
+      100, 100, 100,
+      100, 4, 5,
+      100, 3, 6,
+      100, 100, 100,
+      100, 4, 5,
+      100, 3, 6,
+      100, 100, 100,
+      100, 4, 5,
+      100, 3, 6,
+    ];
 
     it('should calculate and update annotation values', () => {
       const instantiatedTool = new CircleRoiTool();
@@ -269,12 +283,12 @@ describe('CircleRoiTool.js', () => {
         handles: {
           start: {
             x: 3,
-            y: 3
+            y: 3,
           },
           end: {
             x: 4,
-            y: 4
-          }
+            y: 4,
+          },
         },
       };
 

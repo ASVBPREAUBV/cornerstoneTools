@@ -1,15 +1,15 @@
 import EVENTS from './../events.js';
 import triggerEvent from './../util/triggerEvent.js';
 import getToolForElement from './getToolForElement.js';
-import store from './../store/index.js';
 import {
   setToolCursor,
   resetToolCursor,
   hideToolCursor,
 } from './setToolCursor.js';
 import { getLogger } from '../util/logger.js';
+import store, { getModule } from './index.js';
 
-const globalConfiguration = store.modules.globalConfiguration;
+const globalConfiguration = getModule('globalConfiguration');
 const logger = getLogger('store:setToolMode');
 
 /**
@@ -67,7 +67,7 @@ const setToolActiveForElement = function(
     });
 
     if (
-      globalConfiguration.state.showSVGCursors &&
+      globalConfiguration.configuration.showSVGCursors &&
       tool.supportedInteractionTypes.includes('Mouse')
     ) {
       _setToolCursorIfPrimary(element, options, tool);
@@ -404,10 +404,9 @@ function _resolveMouseInputConflicts(tool, element, options) {
  *
  * @param {Object} tool
  * @param {HTMLElement} element
- * @param {Object} options
  * @returns {undefined}
  */
-function _resolveTouchInputConflicts(tool, element, options) {
+function _resolveTouchInputConflicts(tool, element) {
   const activeTouchTool = store.state.tools.find(
     t =>
       t.element === element &&
@@ -446,10 +445,9 @@ function _resolveTouchInputConflicts(tool, element, options) {
  *
  * @param {Object} tool
  * @param {HTMLElement} element
- * @param {Object} options
  * @returns {undefined}
  */
-function _resolveMultiTouchInputConflicts(tool, element, options) {
+function _resolveMultiTouchInputConflicts(tool, element) {
   const activeMultiTouchTool = store.state.tools.find(
     t =>
       t.element === element &&
@@ -499,12 +497,7 @@ function _resolveMultiTouchInputConflicts(tool, element, options) {
  * @param {(Object|number)} options
  * @returns {undefined}
  */
-function _resolveGenericInputConflicts(
-  interactionType,
-  tool,
-  element,
-  options
-) {
+function _resolveGenericInputConflicts(interactionType, tool, element) {
   const interactionTypeFlag = `is${interactionType}Active`;
   const activeToolWithActiveInteractionType = store.state.tools.find(
     t =>
@@ -524,7 +517,7 @@ function _resolveGenericInputConflicts(
 }
 
 function _trackGlobalToolModeChange(mode, toolName, options, interactionTypes) {
-  if (!store.modules.globalConfiguration.state.globalToolSyncEnabled) {
+  if (!globalConfiguration.configuration.globalToolSyncEnabled) {
     return;
   }
 
@@ -553,7 +546,7 @@ function _trackGlobalToolModeChange(mode, toolName, options, interactionTypes) {
 
   if (!globalTool) {
     logger.warn(
-      `setToolMode call for tool that's not available globally: ${toolName}`
+      `setToolMode call for tool not available globally: ${toolName}`
     );
 
     return;
